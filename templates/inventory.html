@@ -1,6 +1,108 @@
 {% extends "base.html" %}
 {% block title %}My Wardrobe{% endblock %}
+
 {% block content %}
-<h2>My Wardrobe</h2>
-<p>Your clothing inventory is coming in Phase 5.</p>
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>My Wardrobe 👗</h2>
+    <a href="{{ url_for('inventory.add_item') }}" class="btn btn-dark">
+        + Add Item
+    </a>
+</div>
+
+<!-- Category Filter Buttons -->
+<div class="mb-4">
+    {% for category in categories %}
+    <a href="{{ url_for('inventory.view_inventory', category=category) }}"
+       class="btn btn-sm me-2 mb-2
+              {% if selected_category == category %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        {{ category }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Items Grid -->
+{% if items %}
+<div class="row">
+    {% for item in items %}
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm h-100">
+
+            <!-- Item Image -->
+            {% if item["image_path"] %}
+            <img src="{{ url_for('static', filename='uploads/' + item['image_path']) }}"
+                 class="card-img-top"
+                 style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center"
+                 style="height: 200px;">
+                <span class="text-muted fs-4">👕</span>
+            </div>
+            {% endif %}
+
+            <!-- Item Details -->
+            <div class="card-body">
+                <h6 class="card-title">{{ item["name"] }}</h6>
+
+                <p class="card-text mb-1">
+                    <span class="badge bg-dark">{{ item["category"] }}</span>
+                    {% if item["season"] %}
+                    <span class="badge bg-secondary">{{ item["season"] }}</span>
+                    {% endif %}
+                </p>
+
+                {% if item["color"] %}
+                <p class="card-text text-muted small mb-0">
+                    Color: {{ item["color"] }}
+                </p>
+                {% endif %}
+
+                {% if item["size"] %}
+                <p class="card-text text-muted small">
+                    Size: {{ item["size"] }}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Edit and Delete Buttons -->
+            <div class="card-footer d-flex justify-content-between bg-white border-top-0">
+
+                <a href="{{ url_for('inventory.edit_item', item_id=item['id']) }}"
+                   class="btn btn-sm btn-outline-dark">
+                    Edit
+                </a>
+
+                <!-- Delete uses a form with POST method for security -->
+                <form method="POST"
+                      action="{{ url_for('inventory.delete_item', item_id=item['id']) }}"
+                      onsubmit="return confirm('Delete this item from your wardrobe?')">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<!-- Empty state message -->
+<div class="alert alert-light text-center py-5">
+    <h5>No items found in {{ selected_category }}</h5>
+    <p class="text-muted">
+        {% if selected_category == "All" %}
+            Your wardrobe is empty. Start by adding your first item!
+        {% else %}
+            You have no items in the {{ selected_category }} category yet.
+        {% endif %}
+    </p>
+    <a href="{{ url_for('inventory.add_item') }}" class="btn btn-dark">
+        + Add Item
+    </a>
+</div>
+{% endif %}
+
 {% endblock %}
