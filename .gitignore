@@ -1,0 +1,5 @@
+venv/
+closetiq.db
+static/uploads/
+__pycache__/
+*.pyc
