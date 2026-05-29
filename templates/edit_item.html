@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Add Item{% endblock %}
+{% block title %}Edit Item{% endblock %}
 
 {% block content %}
 
@@ -9,70 +9,76 @@
         <div class="card shadow">
             <div class="card-body p-4">
 
-                <h3 class="mb-4">Add Clothing Item</h3>
+                <h3 class="mb-4">Edit Item</h3>
 
-                <!-- enctype is required for file uploads to work -->
-                <form method="POST" action="/add-item" enctype="multipart/form-data">
+                <form method="POST"
+                      action="{{ url_for('inventory.edit_item', item_id=item['id']) }}"
+                      enctype="multipart/form-data">
 
-                    <!-- Item Name -->
+                    <!-- Pre-filled with existing values using value="{{ item['...'] }}" -->
+
                     <div class="mb-3">
                         <label class="form-label">Item Name *</label>
                         <input type="text" name="name" class="form-control"
-                               placeholder="e.g. Blue Cotton T-Shirt" required>
+                               value="{{ item['name'] }}" required>
                     </div>
 
-                    <!-- Category -->
                     <div class="mb-3">
                         <label class="form-label">Category *</label>
                         <select name="category" class="form-select" required>
-                            <option value="" disabled selected>Select a category</option>
-                            <option value="Tops">Tops</option>
-                            <option value="Bottoms">Bottoms</option>
-                            <option value="Footwear">Footwear</option>
-                            <option value="Accessories">Accessories</option>
+                            {% for cat in ["Tops", "Bottoms", "Footwear", "Accessories"] %}
+                            <option value="{{ cat }}"
+                                {% if item['category'] == cat %}selected{% endif %}>
+                                {{ cat }}
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
 
-                    <!-- Color -->
                     <div class="mb-3">
                         <label class="form-label">Color</label>
                         <input type="text" name="color" class="form-control"
-                               placeholder="e.g. Navy Blue">
+                               value="{{ item['color'] or '' }}">
                     </div>
 
-                    <!-- Size -->
                     <div class="mb-3">
                         <label class="form-label">Size</label>
                         <input type="text" name="size" class="form-control"
-                               placeholder="e.g. M, L, 42, 10">
+                               value="{{ item['size'] or '' }}">
                     </div>
 
-                    <!-- Season -->
                     <div class="mb-3">
                         <label class="form-label">Best Season</label>
                         <select name="season" class="form-select">
-                            <option value="All">All Seasons</option>
-                            <option value="Summer">Summer</option>
-                            <option value="Winter">Winter</option>
-                            <option value="Spring">Spring</option>
-                            <option value="Autumn">Autumn</option>
+                            {% for s in ["All", "Summer", "Winter", "Spring", "Autumn"] %}
+                            <option value="{{ s }}"
+                                {% if item['season'] == s %}selected{% endif %}>
+                                {{ s }}
+                            </option>
+                            {% endfor %}
                         </select>
                     </div>
 
-                    <!-- Image Upload -->
+                    <!-- Show current image if it exists -->
+                    {% if item['image_path'] %}
                     <div class="mb-3">
-                        <label class="form-label">Photo</label>
+                        <label class="form-label">Current Photo</label><br>
+                        <img src="{{ url_for('static', filename='uploads/' + item['image_path']) }}"
+                             style="height: 100px; object-fit: cover; border-radius: 8px;">
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            {% if item['image_path'] %}Replace Photo{% else %}Add Photo{% endif %}
+                        </label>
                         <input type="file" name="image" class="form-control"
                                accept=".png,.jpg,.jpeg,.gif">
-                        <div class="form-text">
-                            Optional. PNG, JPG or GIF only.
-                        </div>
                     </div>
 
-                    <!-- Buttons -->
                     <div class="d-flex gap-2 mt-3">
                         <button type="submit" class="btn btn-dark">
-                            Save Item
+                            Save Changes
                         </button>
                         <a href="{{ url_for('inventory.view_inventory') }}"
                            class="btn btn-outline-secondary">
