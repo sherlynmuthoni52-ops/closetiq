@@ -1,6 +1,145 @@
 {% extends "base.html" %}
 {% block title %}Outfit Suggestions{% endblock %}
+
 {% block content %}
-<h2>Outfit Suggestions</h2>
-<p>Outfit suggestions are coming in Phase 6 and 7.</p>
+
+<h2 class="mb-4">Outfit Suggestions 🌤️</h2>
+
+<!-- Step 1: Enter your city -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h5 class="mb-3">Step 1: Check Today's Weather</h5>
+        <p class="text-muted">
+            Enter your city so ClosetIQ can suggest outfits
+            suitable for today's conditions.
+        </p>
+
+        <form method="POST" action="/suggestions">
+            <div class="row g-2 align-items-end">
+
+                <div class="col-md-8">
+                    <label class="form-label">Your City</label>
+                    <input type="text"
+                           name="city"
+                           class="form-control form-control-lg"
+                           placeholder="e.g. Nairobi, London, New York"
+                           value="{{ city }}"
+                           required>
+                </div>
+
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-dark btn-lg w-100">
+                        🌍 Check Weather
+                    </button>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<!-- Weather Results (only shows after form is submitted) -->
+{% if weather %}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+
+        <h5 class="mb-3">
+            📍 Current Weather in {{ weather.city }}, {{ weather.country }}
+        </h5>
+
+        <!-- Weather Stats Row -->
+        <div class="row text-center mb-3">
+
+            <div class="col-md-3 mb-3">
+                <div class="bg-light rounded p-3">
+                    <div style="font-size: 2.5rem;">🌡️</div>
+                    <h3 class="fw-bold mb-0">{{ weather.temp }}°C</h3>
+                    <small class="text-muted">Temperature</small>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="bg-light rounded p-3">
+                    <div style="font-size: 2.5rem;">🤔</div>
+                    <h3 class="fw-bold mb-0">{{ weather.feels_like }}°C</h3>
+                    <small class="text-muted">Feels Like</small>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="bg-light rounded p-3">
+                    <div style="font-size: 2.5rem;">💧</div>
+                    <h3 class="fw-bold mb-0">{{ weather.humidity }}%</h3>
+                    <small class="text-muted">Humidity</small>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="bg-light rounded p-3">
+                    <div style="font-size: 2.5rem;">
+                        {% if weather.is_raining %}🌧️
+                        {% elif weather.category == "Hot" %}☀️
+                        {% elif weather.category == "Cold" or weather.category == "Very Cold" %}🧥
+                        {% else %}⛅{% endif %}
+                    </div>
+                    <h3 class="fw-bold mb-0" style="font-size: 1.1rem;">
+                        {{ weather.category }}
+                    </h3>
+                    <small class="text-muted">{{ weather.description }}</small>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Weather category badge -->
+        <div class="alert alert-secondary mb-0">
+            <strong>ClosetIQ says:</strong>
+            It is currently <strong>{{ weather.category }}</strong>
+            ({{ weather.temp }}°C) in {{ weather.city }}.
+            {% if weather.is_raining %}
+                Don't forget a rain jacket or umbrella! ☔
+            {% elif weather.category == "Very Cold" %}
+                Bundle up well today! 🧤
+            {% elif weather.category == "Cold" %}
+                A warm layer would be a good idea today. 🧥
+            {% elif weather.category == "Mild" %}
+                A comfortable day for most outfits. 😊
+            {% elif weather.category == "Warm" %}
+                Light clothing recommended today. 😎
+            {% else %}
+                Stay cool and light today! 🌞
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Step 2: Outfit suggestions will appear here in Phase 7 -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <h5 class="mb-3">Step 2: Your Outfit Suggestion</h5>
+        <div class="alert alert-info mb-0">
+            <strong>Coming in Phase 7:</strong>
+            ClosetIQ will suggest a complete outfit from your
+            wardrobe based on this weather. Make sure you have
+            added items to your wardrobe first!
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Link to wardrobe -->
+<div class="mt-2">
+    <a href="{{ url_for('inventory.view_inventory') }}"
+       class="btn btn-outline-dark">
+        👗 View My Wardrobe
+    </a>
+</div>
+
 {% endblock %}
