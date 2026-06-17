@@ -42,10 +42,12 @@ def load_user(user_id):
 from routes.auth import auth_bp
 from routes.inventory import inventory_bp
 from routes.outfit import outfit_bp
+from routes.pages import pages_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(inventory_bp)
 app.register_blueprint(outfit_bp)
+app.register_blueprint(pages_bp)
 
 # This runs when you start the app
 if __name__ == "__main__":
