@@ -1,9 +1,9 @@
 import sqlite3
-import os
+from config import DATABASE
 
 # This function opens a connection to your database file
 def get_db():
-    conn = sqlite3.connect("closetiq.db")
+    conn = sqlite3.connect(DATABASE)
     # This line makes results come back as dictionaries
     # so you can say result["username"] instead of result[0]
     conn.row_factory = sqlite3.Row

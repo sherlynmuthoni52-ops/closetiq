@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["DATABASE"] = DATABASE
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
 # Make sure the uploads folder exists
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -49,8 +50,10 @@ app.register_blueprint(inventory_bp)
 app.register_blueprint(outfit_bp)
 app.register_blueprint(pages_bp)
 
+# Initialising on import also supports Flask's CLI and production WSGI servers,
+# which do not execute the __main__ block below.
+init_db()
+
 # This runs when you start the app
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
-    

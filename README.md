@@ -19,11 +19,17 @@ weather conditions.
    venv\Scripts\activate
 3. Install required packages:
    pip install -r requirements.txt
-4. Add your OpenWeatherMap API key to config.py
-5. Run the application:
+4. Set your OpenWeatherMap API key for the current terminal:
+   PowerShell: `$env:OPENWEATHER_API_KEY = "your-api-key"`
+5. (Recommended for deployment) set a secret key too:
+   PowerShell: `$env:CLOSETIQ_SECRET_KEY = "a-long-random-secret"`
+6. Run the application:
    python app.py
-6. Open your browser and go to:
+7. Open your browser and go to:
    http://127.0.0.1:5000
+
+The app will start without a weather key, but outfit weather suggestions will
+show a clear configuration message until `OPENWEATHER_API_KEY` is set.
 
 ## Project Structure
 - app.py          → Main application entry point

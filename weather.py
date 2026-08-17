@@ -9,11 +9,16 @@ def get_weather(city, api_key):
     problem it returns None instead of crashing.
     """
 
+    if not api_key:
+        return {
+            "error": "Weather is not configured. Set the OPENWEATHER_API_KEY environment variable and try again."
+        }
+
     # This is the URL we send our request to
     # We pass the city name, our API key, and units=metric
     # so temperatures come back in Celsius not Fahrenheit
     url = (
-        f"http://api.openweathermap.org/data/2.5/weather"
+        f"https://api.openweathermap.org/data/2.5/weather"
         f"?q={city}&appid={api_key}&units=metric"
     )
 

@@ -1,15 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from flask_login import login_required, current_user
 from database import get_db
 from datetime import datetime
 import os
 import uuid
+from werkzeug.utils import secure_filename
 
 inventory_bp = Blueprint("inventory", __name__)
 
 
 # ─── DASHBOARD ──────────────────────────────────────────
-@inventory_bp.route("/")
 @inventory_bp.route("/dashboard")
 @login_required
 def dashboard():
@@ -106,14 +106,15 @@ def add_item():
 
             # Check the file has a name and is an allowed type
             if file.filename != "":
+                filename = secure_filename(file.filename)
                 allowed = {"png", "jpg", "jpeg", "gif"}
-                extension = file.filename.rsplit(".", 1)[-1].lower()
+                extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
 
                 if extension in allowed:
                     # Create a unique filename so files never overwrite each other
                     # uuid4() generates a random unique ID like "a3f92b1c-..."
                     unique_name = str(uuid.uuid4()) + "." + extension
-                    save_path = os.path.join("static", "uploads", unique_name)
+                    save_path = os.path.join(current_app.config["UPLOAD_FOLDER"], unique_name)
                     file.save(save_path)
                     image_path = unique_name
                 else:
@@ -180,10 +181,11 @@ def edit_item(item_id):
             file = request.files["image"]
             if file.filename != "":
                 allowed = {"png", "jpg", "jpeg", "gif"}
-                extension = file.filename.rsplit(".", 1)[-1].lower()
+                filename = secure_filename(file.filename)
+                extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
                 if extension in allowed:
                     unique_name = str(uuid.uuid4()) + "." + extension
-                    save_path = os.path.join("static", "uploads", unique_name)
+                    save_path = os.path.join(current_app.config["UPLOAD_FOLDER"], unique_name)
                     file.save(save_path)
                     image_path = unique_name
                 else:
@@ -225,7 +227,7 @@ def delete_item(item_id):
 
     # Delete the image file from the uploads folder too
     if item["image_path"]:
-        file_path = os.path.join("static", "uploads", item["image_path"])
+        file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], item["image_path"])
         if os.path.exists(file_path):
             os.remove(file_path)
 
